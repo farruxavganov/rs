@@ -1,5 +1,12 @@
+import ErrorBoundary from './components/ErrorBoundary';
+import Home from './pages/Home';
+
 const App: React.FC = () => {
-  return <h1> Hello wolrd!</h1>;
+  return (
+    <ErrorBoundary>
+      <Home />
+    </ErrorBoundary>
+  );
 };
 
 export default App;
