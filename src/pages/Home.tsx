@@ -7,10 +7,11 @@ interface Props {
 }
 
 interface State {
-  results: Array;
+  results: object[];
 }
 
 class Home extends Component<Props, State> {
+  pagination: number[];
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -21,7 +22,7 @@ class Home extends Component<Props, State> {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  getItems(value?: string, pageNumber?: number = 1) {
+  getItems(value?: string, pageNumber: number = 1) {
     fetch(
       `https://swapi.dev/api/vehicles/${
         value

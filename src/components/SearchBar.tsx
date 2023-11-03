@@ -1,7 +1,7 @@
 import { Component } from 'react';
 
 interface Props {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   handleSubmit(value?: string, pageNumber?: number): void;
 }
 

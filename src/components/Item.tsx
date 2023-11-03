@@ -1,4 +1,11 @@
-const Item: React.FC = ({ item }) => {
+interface Props {
+  item: {
+    name?: string;
+    model?: string;
+  };
+}
+
+const Item: React.FC<Props> = ({ item }) => {
   return (
     <div>
       <h3>{item.name}</h3>
