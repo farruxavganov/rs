@@ -1,28 +1,28 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import SearchBar from '../components/SearchBar';
 import Items from '../components/Items';
+import getItems from '../APIs/getItems';
 
-interface Props {
-  childern?: React.ReactNode;
+export async function loader() {
+  const contacts = await getItems();
+  return { contacts };
 }
 
-interface State {
-  results: object[];
-}
+const Home: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [pagination, setPagination] = useState<number[]>([]);
+  const [results, setResults] = useState<object[]>();
+  const [searchValue] = useState(searchParams.get('search'));
+  const [initSearch] = useState(searchValue ? searchValue : '');
+  const [isLoading, setIsLoading] = useState(false);
 
-class Home extends Component<Props, State> {
-  pagination: number[];
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      results: [],
-    };
-    this.pagination = [];
-    this.getItems = this.getItems.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
+  useEffect(() => {
+    getItems(initSearch);
+  }, [initSearch]);
 
-  getItems(value?: string, pageNumber: number = 1) {
+  const getItems = (value?: string, pageNumber: number = 1) => {
+    setIsLoading(true);
     fetch(
       `https://swapi.dev/api/vehicles/${
         value
@@ -32,37 +32,35 @@ class Home extends Component<Props, State> {
     )
       .then((response) => response.json())
       .then((data) => {
-        this.setState({
-          results: data.results,
-        });
-        this.pagination = Array.from(
+        setResults(data.results);
+        const pagination = Array.from(
           { length: Math.ceil(data.count / 10) },
           (_, index) => index
         );
+        setPagination(pagination);
+        setIsLoading(false);
       });
-  }
+  };
 
-  handleSubmit(value?: string, pageNumber?: number) {
-    this.getItems(value, pageNumber);
-  }
-
-  componentDidMount() {
-    this.getItems();
-  }
-  render() {
-    const { results } = this.state;
-    return (
-      <div className="container">
-        <SearchBar handleSubmit={this.handleSubmit} />
-        <hr />
+  const handleSubmit = (value: string, pageNumber: string) => {
+    setSearchParams({ search: value, page: pageNumber });
+    getItems(value, +pageNumber);
+  };
+  return (
+    <div className="container">
+      <SearchBar handleSubmit={handleSubmit} />
+      <hr />
+      {isLoading ? (
+        <h1>Loading...</h1>
+      ) : (
         <Items
           results={results}
-          paginationArray={this.pagination}
-          handleSubmit={this.handleSubmit}
+          paginationArray={pagination}
+          handleSubmit={handleSubmit}
         />
-      </div>
-    );
-  }
-}
+      )}
+    </div>
+  );
+};
 
 export default Home;
