@@ -2,12 +2,6 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import SearchBar from '../components/SearchBar';
 import Items from '../components/Items';
-import getItems from '../APIs/getItems';
-
-export async function loader() {
-  const contacts = await getItems();
-  return { contacts };
-}
 
 const Home: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
